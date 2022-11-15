@@ -11,7 +11,7 @@ const routes: Routes = [
   // path: '/dashboard' Pagesrouting
   // path: '/auth' Authrouting
 
-  {path: '', redirectTo: '/dashboard', pathMatch: 'full'},
+  {path: '', redirectTo: 'dashboard', pathMatch: 'full'},
   {path: '**', component: NotpagefoundComponent},
 ];
 @NgModule({
