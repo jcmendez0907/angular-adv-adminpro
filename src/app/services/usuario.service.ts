@@ -6,6 +6,7 @@ import { LoginForm } from '../interfaces/login-form.interface';
 import { tap, map, catchError } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 import { Router } from '@angular/router';
+import { Usuario } from '../models/usuario.model';
 
 declare const google: any;
 
@@ -16,31 +17,64 @@ const base_url = environment.base_url;
 export class UsuarioService {
 
   public auth2: any;
+  public usuario: Usuario;
 
   constructor(private http: HttpClient, private router: Router, private ngZone: NgZone) {
     this.googleInit();
+    this.usuario =  new Usuario('','');
+   }
+
+   get token():string{
+    return localStorage.getItem('token') || '';
+   }
+
+   get uid():string{
+    return this.usuario.uid || '';
+   }
+
+   get role():string{
+    return this.usuario.role || '';
    }
 
   veryToken(): Observable<boolean>{
-    const token = localStorage.getItem('token') || '';
+    // const token = localStorage.getItem('token') || '';
     return this.http.get(`${base_url}/login/renew`, {
       headers : {
-        'x-token': token
+        'x-token': this.token
       }
     } ).pipe(
-      tap((resp: any)=>{
+      map((resp: any)=>{
         localStorage.setItem('token', resp.token)
+        const {
+          email, google, nombre, role, uid, img=''
+        } = resp.usuario;
+        this.usuario = new Usuario(nombre, email, '', role,google, img, uid);
+        return true;
       }),
-      map((resp:any) => true),
+
       catchError(error=> of(false))
     );
   }
 
   crearUsuario( formData: RegisterForm) {
-    return this.http.post(`${base_url}/usuarios`, formData )
+    return this.http.post(`${base_url}/usuarios`, formData ,{
+      headers : {
+        'x-token': this.token
+      }
+    }
+    )
+  }
+
+  actualizarPerfil(data: {email:string, nombre: string, role: string}){
+    data= {
+      ...data,
+      role: this.role
+    }
+    return this.http.put(`${base_url}/usuarios/${this.uid}`, data )
     .pipe(
       tap((resp: any)=>{
-        localStorage.setItem('token', resp.token)
+        this.usuario = resp.usuario;
+        //localStorage.setItem('token', resp.token)
       })
     )
   }
@@ -84,6 +118,7 @@ export class UsuarioService {
   logout(){
     localStorage.removeItem('token');
 
+    /*
 
     this.auth2.signOut().then(()=>{
       this.ngZone.run(()=>{
@@ -92,6 +127,8 @@ export class UsuarioService {
 
 
     })
+    */
+    this.router.navigateByUrl('/login');
   }
 
 

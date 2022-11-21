@@ -38,7 +38,7 @@ export class LoginComponent implements AfterViewInit {
     this.attachSignin( this.googleBtn.nativeElement );
     /*
     google.accounts.id.initialize({
-      client_id: '1076846195512-6kkpj26a0hqb3o4nc0omd84vijnvvaec.apps.googleusercontent.com',
+      client_id: 'google_cliente_id',
       callback: (response:any) => this.handleCredentialResponse(response)
     });
     */
