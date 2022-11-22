@@ -12,12 +12,18 @@ export class Usuario {
   ){}
 
   get ImagenUrl(){
+    if(!this.img){
+      return `${api_url}/uploads/usuarios/no-img`;
+    }else
     if(this.img?.includes('https')){
       return this.img;
-    }
+    }else
     if (this.img){
       return `${api_url}/uploads/usuarios/${this.img}`;
+    }else {
+      return `${api_url}/uploads/usuarios/no-img`;
     }
-    return ''
   }
+
+
 }
